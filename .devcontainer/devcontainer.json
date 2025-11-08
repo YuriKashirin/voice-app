@@ -8,21 +8,22 @@
   "customizations": {
     "vscode": {
       "extensions": [
+        // Python - Backend
         "ms-python.python",
         "ms-python.vscode-pylance",
+        "ms-python.black-formatter",
+        "charliermarsh.ruff",
+        // TypeScript/JavaScript - Frontend
         "dbaeumer.vscode-eslint",
         "esbenp.prettier-vscode",
-        "bradlc.vscode-tailwindcss",
-        "ms-vscode.vscode-typescript-next"
+        // Docker
+        "ms-azuretools.vscode-docker"
       ],
       "settings": {
+        // Devcontainer-specific Python interpreter path
         "python.defaultInterpreterPath": "/workspaces/ai-transcript-app/backend/.venv/bin/python",
-        "python.terminal.activateEnvironment": true,
-        "editor.formatOnSave": true,
-        "editor.defaultFormatter": "esbenp.prettier-vscode",
-        "[python]": {
-          "editor.defaultFormatter": "ms-python.python"
-        }
+        "python.terminal.activateEnvironment": true
+        // Other settings are in .vscode/settings.json and apply automatically
       }
     }
   },

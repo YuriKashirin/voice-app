@@ -9,6 +9,8 @@ venv/
 ENV/
 env/
 backend/.venv/
+.ruff_cache/
+.pytest_cache/
 
 # uv
 .python-version
@@ -24,10 +26,15 @@ logs/
 Thumbs.db
 
 # IDE
-.vscode/
 .idea/
 *.swp
 *.swo
+# VSCode - Keep shared config, ignore user-specific files
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+!.vscode/launch.json
+!.vscode/tasks.json
 
 # Whisper cache
 ~/.cache/
@@ -49,3 +56,5 @@ frontend/dist/
 
 
 .claude
+tmp
+CLAUDE.md
