@@ -38,6 +38,10 @@ npm install
 cd ..
 echo "✅ Frontend dependencies installed"
 
+echo "🔧 Installing TypeScript globally..."
+npm install -g typescript@5.9.3
+echo "✅ TypeScript installed globally"
+
 # Download Ollama model automatically
 echo "🤖 Downloading Ollama model (gemma3:4b)..."
 echo "   This may take 5-15 minutes on first setup..."
@@ -67,6 +71,7 @@ echo "📋 Installed versions:"
 echo "  Python: $(python --version)"
 echo "  Node.js: $(node --version)"
 echo "  npm: $(npm --version)"
+echo "  TypeScript: $(tsc --version)"
 echo "  uv: $(uv --version)"
 echo "  Ollama: Running as Docker service at http://ollama:11434"
 
