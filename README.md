@@ -8,7 +8,7 @@ AI-powered voice transcription with Whisper and LLM cleaning. Browser-based reco
 **Features:**
 
 - 🎤 Browser-based voice recording
-- 🔊 Whisper speech-to-text (runs locally)
+- 🔊 English Whisper speech-to-text (runs locally)
 - 🤖 LLM cleaning (removes filler words, fixes errors)
 - 🔌 **OpenAI API-compatible** (works with Ollama, LM Studio, OpenAI, or any OpenAI-compatible API)
 - 📋 One-click copy to clipboard
@@ -19,9 +19,10 @@ The challenge for you is to change this portfolio app to advance the solution an
 
 For example:
 - Modify it for a specific industry
-- Add GPU acceleration
+- Add GPU acceleration + stronger local LLM
 - Use a cloud AI model
 - Real-time transcription/LLM streaming
+- Multi-language support beyond English
 
 **📚 Need help and want to learn more?**
 
