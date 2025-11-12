@@ -51,7 +51,6 @@ class TranscriptionService:
         segments, info = self.whisper.transcribe(
             audio_file,
             beam_size=5,
-            language="en",
             condition_on_previous_text=False
         )
 
