@@ -48,29 +48,24 @@ export function TextBox({
             className={styles.textarea}
           />
         ) : (
-          <p className={styles.text}>{value}</p>
+          <>
+            <p className={styles.text}>{value}</p>
+            {showCopyButton && value && (
+              <button
+                onClick={handleCopy}
+                className={styles.integratedCopyButton}
+                aria-label={isCopied ? 'Copied' : 'Copy'}
+              >
+                {isCopied ? (
+                  <Check className={styles.copyIcon} />
+                ) : (
+                  <Copy className={styles.copyIcon} />
+                )}
+              </button>
+            )}
+          </>
         )}
       </div>
-
-      {showCopyButton && !isLoading && value && (
-        <button
-          onClick={handleCopy}
-          className={styles.copyButton}
-          aria-label={isCopied ? 'Copied to clipboard' : 'Copy to clipboard'}
-        >
-          {isCopied ? (
-            <>
-              <Check className={styles.icon} />
-              <span>Copied!</span>
-            </>
-          ) : (
-            <>
-              <Copy className={styles.icon} />
-              <span>Copy</span>
-            </>
-          )}
-        </button>
-      )}
     </div>
   );
 }

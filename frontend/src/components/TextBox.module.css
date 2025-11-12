@@ -41,6 +41,7 @@
               0 1px 4px rgba(0, 0, 0, 0.06),
               inset 0 1px 0 rgba(255, 255, 255, 0.8);
   overflow-y: auto;
+  position: relative;
 }
 
 .textBox.display:hover {
@@ -91,32 +92,47 @@
   margin: 0;
 }
 
-.copyButton {
+.integratedCopyButton {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 24px;
+  height: 24px;
+  background: rgba(255, 255, 255, 0.9);
+  border: none;
+  border-radius: 4px;
   display: flex;
   align-items: center;
-  gap: var(--space-2);
-  padding: var(--space-2) var(--space-4);
-  margin-top: var(--space-3);
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-medium);
-  color: #1e3a5f;
-  background: white;
-  border: 1px solid rgba(30, 58, 95, 0.2);
-  border-radius: var(--radius-md);
-  transition: all var(--transition-base);
+  justify-content: center;
   cursor: pointer;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  opacity: 0;
+  transition: all var(--transition-base);
+  backdrop-filter: blur(2px);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
-.copyButton:hover {
-  background: var(--color-primary);
-  color: white;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 8px rgba(91, 159, 245, 0.3);
+.textBox.display:hover .integratedCopyButton {
+  opacity: 1;
 }
 
-.copyButton:active {
-  transform: translateY(0);
+.integratedCopyButton:hover {
+  background: rgba(255, 255, 255, 0.95);
+  transform: scale(1.1);
+}
+
+.integratedCopyButton:active {
+  transform: scale(0.95);
+}
+
+.copyIcon {
+  width: 12px;
+  height: 12px;
+  color: rgba(30, 58, 95, 0.7);
+  transition: color var(--transition-base);
+}
+
+.integratedCopyButton:hover .copyIcon {
+  color: var(--color-primary);
 }
 
 .icon {

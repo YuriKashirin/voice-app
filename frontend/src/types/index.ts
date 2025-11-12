@@ -47,9 +47,7 @@ export interface TranscriptionResultsProps {
   isCopied: boolean;
   isCleaningWithLLM: boolean;
   isProcessing: boolean;
-  isOriginalExpanded: boolean;
   onCopy: (text: string) => void;
-  onToggleOriginalExpanded: () => void;
 }
 
 export interface ErrorMessageProps {

@@ -30,7 +30,6 @@ function App() {
   const [isCopied, setIsCopied] = useState(false);
   
   const [isCleaningWithLLM, setIsCleaningWithLLM] = useState(false);
-  const [isOriginalExpanded, setIsOriginalExpanded] = useState(true);
 
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
@@ -63,7 +62,6 @@ function App() {
       }
 
       setRawText(transcribeData.text || '');
-      setIsProcessing(false);
       setError(null);
 
       if (useLLM && transcribeData.text) {
@@ -81,6 +79,7 @@ function App() {
 
         if (!cleanResponse.ok) {
           setIsCleaningWithLLM(false);
+          setIsProcessing(false);
           throw new Error(`Cleaning failed: ${cleanResponse.statusText}`);
         }
 
@@ -91,6 +90,9 @@ function App() {
         }
 
         setIsCleaningWithLLM(false);
+        setIsProcessing(false);
+      } else {
+        setIsProcessing(false);
       }
     } catch (err) {
       const errorMessage =
@@ -216,9 +218,7 @@ function App() {
           isCopied={isCopied}
           isCleaningWithLLM={isCleaningWithLLM}
           isProcessing={isProcessing}
-          isOriginalExpanded={isOriginalExpanded}
           onCopy={copyToClipboard}
-          onToggleOriginalExpanded={() => setIsOriginalExpanded(!isOriginalExpanded)}
         />
       </div>
     </div>

@@ -22,7 +22,6 @@ export function RecordButton({
       return (
         <>
           <Loader2 className={styles.icon} />
-          <span>Processing...</span>
         </>
       );
     }
@@ -31,7 +30,6 @@ export function RecordButton({
       return (
         <>
           <Square className={styles.icon} />
-          <span>Stop Recording</span>
         </>
       );
     }
@@ -39,7 +37,6 @@ export function RecordButton({
     return (
       <>
         <Mic className={styles.icon} />
-        <span>Start Recording</span>
       </>
     );
   };
@@ -62,7 +59,7 @@ export function RecordButton({
       >
         {getButtonContent()}
       </button>
-      <p className={styles.hint}>Hold &quot;V&quot; key to record</p>
+      <p className={styles.hint}>Hold 'v' to record</p>
     </div>
   );
 }

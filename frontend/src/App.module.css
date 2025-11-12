@@ -43,6 +43,6 @@
 /* Desktop */
 @media (min-width: 1025px) {
   .container {
-    max-width: 700px;
+    max-width: 350px;
   }
 }
