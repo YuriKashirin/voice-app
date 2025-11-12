@@ -36,20 +36,7 @@ export interface RecordButtonProps {
   onStopRecording: () => void;
 }
 
-export interface UploadZoneProps {
-  isProcessing: boolean;
-  isDragging: boolean;
-  onFileSelect: (file: File) => void;
-  onDragEnter: () => void;
-  onDragLeave: () => void;
-  onDrop: (file: File) => void;
-  fileInputRef: React.RefObject<HTMLInputElement | null>;
-}
 
-export interface TextInputZoneProps {
-  isProcessing: boolean;
-  onTextSubmit: (text: string) => Promise<void>;
-}
 
 export interface SettingsPanelProps {
   useLLM: boolean;

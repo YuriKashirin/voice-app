@@ -2,8 +2,7 @@ import { useState, useRef, useEffect, useCallback } from 'react';
 import styles from './App.module.css';
 import { Header } from './components/Header';
 import { RecordButton } from './components/RecordButton';
-import { UploadZone } from './components/UploadZone';
-import { TextInputZone } from './components/TextInputZone';
+
 import { SettingsPanel } from './components/SettingsPanel';
 import { TranscriptionResults } from './components/TranscriptionResults';
 import { ErrorMessage } from './components/ErrorMessage';
@@ -33,14 +32,14 @@ function App() {
   const [isCopied, setIsCopied] = useState(false);
   const [systemPrompt, setSystemPrompt] = useState('');
   const [isLoadingPrompt, setIsLoadingPrompt] = useState(true);
-  const [isDragging, setIsDragging] = useState(false);
+  
   const [isCleaningWithLLM, setIsCleaningWithLLM] = useState(false);
   const [isOriginalExpanded, setIsOriginalExpanded] = useState(true);
 
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
   const isKeyDownRef = useRef(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  
 
   useEffect(() => {
     const loadSystemPrompt = async () => {
@@ -160,94 +159,7 @@ function App() {
     }
   }, [isRecording]);
 
-  const processAudioFile = (file: File) => {
-    if (!file) return;
-
-    if (!file.type.startsWith('audio/')) {
-      setError('Please select an audio file');
-      return;
-    }
-
-    setError(null);
-    setRawText(null);
-    setCleanedText(null);
-    setIsProcessing(true);
-    setIsCleaningWithLLM(false);
-
-    const blob = new Blob([file], { type: file.type });
-    void uploadAudio(blob);
-  };
-
-  const handleDragEnter = () => {
-    setIsDragging(true);
-  };
-
-  const handleDragLeave = () => {
-    setIsDragging(false);
-  };
-
-  const handleDrop = (file: File) => {
-    if (isProcessing || isRecording) return;
-    processAudioFile(file);
-  };
-
-  const handleFileSelect = (file: File) => {
-    processAudioFile(file);
-
-    // Reset file input so the same file can be selected again
-    if (fileInputRef.current) {
-      fileInputRef.current.value = '';
-    }
-  };
-
-  const handleTextSubmit = useCallback(async (text: string) => {
-    if (!text.trim()) return;
-
-    try {
-      setError(null);
-      setRawText(null);
-      setCleanedText(null);
-      setIsProcessing(true);
-      setIsCleaningWithLLM(false);
-
-      setRawText(text);
-      setIsProcessing(false);
-
-      if (useLLM) {
-        setIsCleaningWithLLM(true);
-
-        const cleanResponse = await fetch('/api/clean', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            text: text,
-            ...(systemPrompt && { system_prompt: systemPrompt }),
-          }),
-        });
-
-        if (!cleanResponse.ok) {
-          setIsCleaningWithLLM(false);
-          throw new Error(`Cleaning failed: ${cleanResponse.statusText}`);
-        }
-
-        const cleanData = (await cleanResponse.json()) as CleanResponse;
-
-        if (cleanData.success && cleanData.text) {
-          setCleanedText(cleanData.text);
-        }
-
-        setIsCleaningWithLLM(false);
-      }
-    } catch (err) {
-      const errorMessage =
-        err instanceof Error ? err.message : 'Unknown error';
-      setError('Processing failed: ' + errorMessage);
-      setIsProcessing(false);
-      setIsCleaningWithLLM(false);
-    }
-  }, [useLLM, systemPrompt]);
+  
 
   const copyToClipboard = (text: string) => {
     navigator.clipboard
@@ -311,20 +223,7 @@ function App() {
           onStopRecording={stopRecording}
         />
 
-        <UploadZone
-          isProcessing={isProcessing}
-          isDragging={isDragging}
-          onFileSelect={handleFileSelect}
-          onDragEnter={handleDragEnter}
-          onDragLeave={handleDragLeave}
-          onDrop={handleDrop}
-          fileInputRef={fileInputRef}
-        />
-
-        <TextInputZone
-          isProcessing={isProcessing}
-          onTextSubmit={handleTextSubmit}
-        />
+        
 
         <SettingsPanel
           useLLM={useLLM}
