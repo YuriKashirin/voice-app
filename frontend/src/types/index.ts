@@ -38,13 +38,7 @@ export interface RecordButtonProps {
 
 
 
-export interface SettingsPanelProps {
-  useLLM: boolean;
-  systemPrompt: string;
-  isLoadingPrompt: boolean;
-  onToggleLLM: (value: boolean) => void;
-  onPromptChange: (value: string) => void;
-}
+
 
 export interface TranscriptionResultsProps {
   rawText: string | null;

@@ -3,7 +3,7 @@ import styles from './App.module.css';
 import { Header } from './components/Header';
 import { RecordButton } from './components/RecordButton';
 
-import { SettingsPanel } from './components/SettingsPanel';
+
 import { TranscriptionResults } from './components/TranscriptionResults';
 import { ErrorMessage } from './components/ErrorMessage';
 
@@ -18,9 +18,7 @@ interface CleanResponse {
   text?: string;
 }
 
-interface SystemPromptResponse {
-  default_prompt: string;
-}
+
 
 function App() {
   const [isRecording, setIsRecording] = useState(false);
@@ -28,10 +26,8 @@ function App() {
   const [rawText, setRawText] = useState<string | null>(null);
   const [cleanedText, setCleanedText] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [useLLM, setUseLLM] = useState(true);
+  const useLLM = true;
   const [isCopied, setIsCopied] = useState(false);
-  const [systemPrompt, setSystemPrompt] = useState('');
-  const [isLoadingPrompt, setIsLoadingPrompt] = useState(true);
   
   const [isCleaningWithLLM, setIsCleaningWithLLM] = useState(false);
   const [isOriginalExpanded, setIsOriginalExpanded] = useState(true);
@@ -41,22 +37,7 @@ function App() {
   const isKeyDownRef = useRef(false);
   
 
-  useEffect(() => {
-    const loadSystemPrompt = async () => {
-      try {
-        const response = await fetch('/api/system-prompt');
-        const data = (await response.json()) as SystemPromptResponse;
-        setSystemPrompt(data.default_prompt);
-      } catch (err) {
-        console.error('Failed to load system prompt:', err);
-        setError('Failed to load system prompt');
-      } finally {
-        setIsLoadingPrompt(false);
-      }
-    };
-
-    void loadSystemPrompt();
-  }, []);
+  
 
   const uploadAudio = useCallback(async (audioBlob: Blob) => {
     const formData = new FormData();
@@ -95,7 +76,6 @@ function App() {
           },
           body: JSON.stringify({
             text: transcribeData.text,
-            ...(systemPrompt && { system_prompt: systemPrompt }),
           }),
         });
 
@@ -118,7 +98,7 @@ function App() {
       setError('Processing failed: ' + errorMessage);
       setIsProcessing(false);
     }
-  }, [useLLM, systemPrompt]);
+  }, [useLLM]);
 
   const startRecording = useCallback(async () => {
     try {
@@ -225,13 +205,7 @@ function App() {
 
         
 
-        <SettingsPanel
-          useLLM={useLLM}
-          systemPrompt={systemPrompt}
-          isLoadingPrompt={isLoadingPrompt}
-          onToggleLLM={setUseLLM}
-          onPromptChange={setSystemPrompt}
-        />
+        
 
         {error && <ErrorMessage message={error} onDismiss={() => setError(null)} />}
 

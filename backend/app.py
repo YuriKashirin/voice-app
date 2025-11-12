@@ -90,7 +90,7 @@ async def clean_text(request: CleanRequest):
         raise HTTPException(status_code=503, detail="Service not ready")
 
     try:
-        cleaned_text = service.clean_with_llm(request.text, system_prompt=request.system_prompt)
+        cleaned_text = service.clean_with_llm(request.text)
         return {"success": True, "text": cleaned_text}
 
     except Exception as e:
