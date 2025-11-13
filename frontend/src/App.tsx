@@ -2,10 +2,9 @@ import { useState, useRef, useEffect, useCallback } from 'react';
 import styles from './App.module.css';
 import { Header } from './components/Header';
 import { RecordButton } from './components/RecordButton';
-
-
 import { TranscriptionResults } from './components/TranscriptionResults';
 import { ErrorMessage } from './components/ErrorMessage';
+import { Settings } from './components/Settings';
 
 interface TranscriptionResponse {
   success: boolean;
@@ -28,6 +27,7 @@ function App() {
   const [error, setError] = useState<string | null>(null);
   const useLLM = true;
   const [isCopied, setIsCopied] = useState(false);
+  const [isSettingsMode, setIsSettingsMode] = useState(false);
   
   const [isCleaningWithLLM, setIsCleaningWithLLM] = useState(false);
 
@@ -38,12 +38,16 @@ function App() {
 
   
 
-  const uploadAudio = useCallback(async (audioBlob: Blob) => {
+  (window as any).openSettingsMode = () => setIsSettingsMode(true);
+
+const uploadAudio = useCallback(async (audioBlob: Blob) => {
     const formData = new FormData();
     formData.append('audio', audioBlob, 'recording.webm');
 
     try {
-      const transcribeResponse = await fetch('/api/transcribe', {
+      // In Electron, connect to the backend server
+      const backendUrl = 'http://localhost:8000'; // Force use of port 8000
+      const transcribeResponse = await fetch(`${backendUrl}/api/transcribe`, {
         method: 'POST',
         body: formData,
       });
@@ -67,7 +71,9 @@ function App() {
       if (useLLM && transcribeData.text) {
         setIsCleaningWithLLM(true);
 
-        const cleanResponse = await fetch('/api/clean', {
+        // In Electron, connect to the backend server
+      const backendUrl = 'http://localhost:8000'; // Force use of port 8000
+      const cleanResponse = await fetch(`${backendUrl}/api/clean`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -196,18 +202,24 @@ function App() {
   return (
     <div className={styles.app}>
       <div className={styles.container}>
-        <Header />
-
-        <RecordButton
-          isRecording={isRecording}
-          isProcessing={isProcessing}
-          onStartRecording={startRecording}
-          onStopRecording={stopRecording}
+        <Header 
+          isSettingsMode={isSettingsMode}
+          onToggleSettings={() => setIsSettingsMode(true)}
         />
 
-        
-
-        
+        {isSettingsMode ? (
+          <Settings
+            isOpen={true}
+            onClose={() => setIsSettingsMode(false)}
+          />
+        ) : (
+          <RecordButton
+            isRecording={isRecording}
+            isProcessing={isProcessing}
+            onStartRecording={startRecording}
+            onStopRecording={stopRecording}
+          />
+        )}
 
         {error && <ErrorMessage message={error} onDismiss={() => setError(null)} />}
 

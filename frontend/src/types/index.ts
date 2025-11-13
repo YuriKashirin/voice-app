@@ -91,3 +91,31 @@ export const ACCEPTED_AUDIO_TYPES: AudioFileType[] = [
   'audio/ogg',
   'audio/x-m4a',
 ];
+
+// Settings types for Electron integration
+export interface AppSettings {
+  apiKey: string;
+  baseUrl: string;
+  model: string;
+  whisperModel: string;
+}
+
+export interface SettingsProps {
+  isOpen: boolean;
+  onClose: () => void;
+}
+
+// Electron API types
+declare global {
+  interface Window {
+    electronAPI: {
+      getSettings: () => Promise<AppSettings>;
+      saveSettings: (settings: AppSettings) => Promise<boolean>;
+      testApiConnection: (settings: AppSettings) => Promise<{ success: boolean; message: string }>;
+      onBackendError: (callback: (message: string) => void) => void;
+      removeBackendErrorListener: (callback: (message: string) => void) => void;
+      getVersion: () => string;
+      platform: string;
+    };
+  }
+}

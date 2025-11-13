@@ -1,12 +1,16 @@
 {
-  "name": "ai-transcript-app-frontend",
+  "name": "ai-transcript-app",
   "private": true,
   "version": "0.1.0",
+  "description": "AI-powered voice transcription with Whisper and LLM cleaning",
+  "author": "AI Transcript",
   "type": "module",
   "engines": {
     "node": ">=24.0.0",
     "npm": ">=10.0.0"
   },
+  "main": "public/electron.cjs",
+  "homepage": "./",
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
@@ -15,9 +19,18 @@
     "lint:fix": "eslint . --ext ts,tsx --fix",
     "format": "prettier --write \"src/**/*.{ts,tsx,css}\"",
     "format:check": "prettier --check \"src/**/*.{ts,tsx,css}\"",
-    "type-check": "tsc --noEmit"
+    "type-check": "tsc --noEmit",
+    "electron": "electron .",
+    "electron-dev": "concurrently \"npm run dev\" \"wait-on http://localhost:3000 && electron .\"",
+    "preelectron-pack": "npm run build",
+    "electron-pack": "electron-builder",
+    "preelectron-pack-win": "npm run build",
+    "electron-pack-win": "electron-builder --win",
+    "preelectron-pack-mac": "npm run build",
+    "electron-pack-mac": "electron-builder --mac"
   },
   "dependencies": {
+    "electron-store": "^8.0.0",
     "lucide-react": "^0.552.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0"
@@ -29,6 +42,9 @@
     "@typescript-eslint/eslint-plugin": "^8.46.3",
     "@typescript-eslint/parser": "^8.46.3",
     "@vitejs/plugin-react": "^5.1.0",
+    "concurrently": "^8.2.2",
+    "electron": "^33.2.0",
+    "electron-builder": "^25.1.8",
     "eslint": "^9.39.1",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.4",
@@ -39,6 +55,37 @@
     "prettier": "^3.6.2",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.46.3",
-    "vite": "^7.1.12"
+    "vite": "^7.1.12",
+    "wait-on": "^7.2.0"
+  },
+  "build": {
+    "appId": "com.aitranscript.app",
+    "productName": "AI Transcript App",
+    "directories": {
+      "output": "../dist"
+    },
+    "files": [
+      "build/**/*",
+      "public/**/*",
+      "node_modules/**/*"
+    ],
+    "mac": {
+      "category": "public.app-category.productivity",
+      "target": [
+        {
+          "target": "dmg",
+          "arch": [
+            "x64",
+            "arm64"
+          ]
+        }
+      ]
+    },
+    "win": {
+      "target": "nsis"
+    },
+    "linux": {
+      "target": "AppImage"
+    }
   }
 }
