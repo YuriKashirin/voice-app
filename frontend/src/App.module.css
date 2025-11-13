@@ -1,16 +1,26 @@
 .app {
-  min-height: 100vh;
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: center;
-  padding: var(--space-4) var(--space-4);
+  padding: 0 var(--space-6);
+  height: 240px;
+  /* Make window draggable */
+  -webkit-app-region: drag;
+}
+
+.app.settingsMode {
+  height: 100%;
+  align-items: flex-start;
+  padding: var(--space-6);
+  /* Make window draggable */
+  -webkit-app-region: drag;
 }
 
 .container {
   width: 100%;
   max-width: var(--container-md);
   margin: 0 auto;
-  padding: var(--space-6);
+  padding: var(--space-4);
   background: rgba(255, 255, 255, 0.05);
   border-radius: var(--radius-2xl);
   backdrop-filter: blur(20px);
@@ -18,16 +28,14 @@
   box-shadow:
     0 8px 32px rgba(0, 0, 0, 0.1),
     inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+  /* Make container not draggable so buttons work */
+  -webkit-app-region: no-drag;
 }
 
 /* Mobile responsive */
 @media (max-width: 640px) {
-  .app {
-    padding: var(--space-4) var(--space-2);
-  }
-
   .container {
-    padding: var(--space-6) var(--space-4);
+    padding: var(--space-3) var(--space-2);
     border-radius: var(--radius-xl);
   }
 }
@@ -45,4 +53,9 @@
   .container {
     max-width: 350px;
   }
+}
+
+/* Ensure all interactive elements are not draggable globally */
+button, input, textarea, select, [role="button"] {
+  -webkit-app-region: no-drag !important;
 }

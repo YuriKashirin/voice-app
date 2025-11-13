@@ -8,6 +8,9 @@ contextBridge.exposeInMainWorld('electronAPI', {
   saveSettings: (settings) => ipcRenderer.invoke('save-settings', settings),
   testApiConnection: (settings) => ipcRenderer.invoke('test-api-connection', settings),
   
+  // Window management
+  resizeWindow: (width, height) => ipcRenderer.invoke('resize-window', width, height),
+  
   // Backend status
   onBackendError: (callback) => ipcRenderer.on('backend-error', callback),
   removeBackendErrorListener: (callback) => ipcRenderer.removeListener('backend-error', callback),

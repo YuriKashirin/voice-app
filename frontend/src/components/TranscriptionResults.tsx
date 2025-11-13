@@ -11,8 +11,14 @@ export function TranscriptionResults({
   isProcessing,
   onCopy,
 }: TranscriptionResultsProps) {
-  // Only show component when not processing and we have cleaned text
-  if (isProcessing || !cleanedText || isCleaningWithLLM) {
+  // Only show component when not processing and we have any text content
+  // Only show component when we have actual text content to display
+  if (isProcessing || isCleaningWithLLM) {
+    return null;
+  }
+  
+  // Don't render if there's no text at all
+  if (!rawText && !cleanedText) {
     return null;
   }
 

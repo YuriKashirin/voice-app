@@ -21,6 +21,8 @@
   top: var(--space-2);
   right: var(--space-2);
   z-index: 1000;
+  /* Make button not draggable */
+  -webkit-app-region: no-drag;
 }
 
 .settingsButton:hover {
@@ -30,6 +32,9 @@
 .settingsIcon {
   width: 18px;
   height: 18px;
+  /* Make icon not draggable */
+  -webkit-app-region: no-drag;
+  pointer-events: none; /* Ensure icon doesn't interfere with button clicks */
 }
 
 .settingsContainer {

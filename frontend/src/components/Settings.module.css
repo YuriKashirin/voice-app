@@ -9,7 +9,7 @@
   width: 100%;
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  margin-bottom: var(--space-4);
+  margin: var(--space-4) 0;
 }
 
 .header {
@@ -39,6 +39,8 @@
   border: none;
   transition: background-color var(--transition-base);
   color: rgba(255, 255, 255, 0.7);
+  /* Make close button not draggable */
+  -webkit-app-region: no-drag;
 }
 
 .closeButton:hover {
@@ -73,6 +75,8 @@
   border-radius: var(--radius-sm);
   color: white;
   transition: border-color var(--transition-base), box-shadow var(--transition-base);
+  /* Make inputs not draggable */
+  -webkit-app-region: no-drag;
 }
 
 .input::placeholder {
@@ -113,6 +117,8 @@
   border-radius: var(--radius-sm);
   transition: all var(--transition-base);
   cursor: pointer;
+  /* Make button not draggable */
+  -webkit-app-region: no-drag;
 }
 
 .testButton {
@@ -211,4 +217,13 @@
   .buttonGroup {
     flex-direction: column;
   }
+}
+
+/* Ensure all interactive elements are not draggable */
+input, 
+select, 
+button,
+textarea,
+[role="button"] {
+  -webkit-app-region: no-drag !important;
 }

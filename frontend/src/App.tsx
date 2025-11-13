@@ -2,7 +2,7 @@ import { useState, useRef, useEffect, useCallback } from 'react';
 import styles from './App.module.css';
 import { Header } from './components/Header';
 import { RecordButton } from './components/RecordButton';
-import { TranscriptionResults } from './components/TranscriptionResults';
+
 import { ErrorMessage } from './components/ErrorMessage';
 import { Settings } from './components/Settings';
 
@@ -22,11 +22,10 @@ interface CleanResponse {
 function App() {
   const [isRecording, setIsRecording] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
-  const [rawText, setRawText] = useState<string | null>(null);
-  const [cleanedText, setCleanedText] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const useLLM = true;
   const [isCopied, setIsCopied] = useState(false);
+  const [lastCopiedText, setLastCopiedText] = useState<string | null>(null);
+  const [copyToast, setCopyToast] = useState<boolean>(false);
   const [isSettingsMode, setIsSettingsMode] = useState(false);
   
   const [isCleaningWithLLM, setIsCleaningWithLLM] = useState(false);
@@ -39,6 +38,41 @@ function App() {
   
 
   (window as any).openSettingsMode = () => setIsSettingsMode(true);
+
+  // Window resize effect
+  useEffect(() => {
+    const resizeWindow = async (isSettings: boolean) => {
+      if (!window.electronAPI) return;
+      
+      try {
+        // Define dimensions for each mode
+        const dimensions = isSettings 
+          ? { width: 380, height: 650 }  // Settings mode: same width, taller
+          : { width: 380, height: 240 };  // Normal mode: very compact
+        
+        await window.electronAPI.resizeWindow(dimensions.width, dimensions.height);
+      } catch (error) {
+        console.error('Failed to resize window:', error);
+      }
+    };
+
+    resizeWindow(isSettingsMode);
+  }, [isSettingsMode]);
+
+const copyToClipboard = useCallback((text: string) => {
+    navigator.clipboard
+      .writeText(text)
+      .then(() => {
+        setIsCopied(true);
+        setLastCopiedText(text);
+        setCopyToast(true);
+        setTimeout(() => {
+          setIsCopied(false);
+          setCopyToast(false);
+        }, 2000);
+      })
+      .catch((err: Error) => setError('Copy failed: ' + err.message));
+  }, []);
 
 const uploadAudio = useCallback(async (audioBlob: Blob) => {
     const formData = new FormData();
@@ -65,15 +99,15 @@ const uploadAudio = useCallback(async (audioBlob: Blob) => {
         throw new Error(transcribeData.error || 'Transcription failed');
       }
 
-      setRawText(transcribeData.text || '');
       setError(null);
 
-      if (useLLM && transcribeData.text) {
+      // Always use LLM to clean the text before copying
+      if (transcribeData.text) {
         setIsCleaningWithLLM(true);
 
         // In Electron, connect to the backend server
-      const backendUrl = 'http://localhost:8000'; // Force use of port 8000
-      const cleanResponse = await fetch(`${backendUrl}/api/clean`, {
+        const backendUrl = 'http://localhost:8000'; // Force use of port 8000
+        const cleanResponse = await fetch(`${backendUrl}/api/clean`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -92,7 +126,11 @@ const uploadAudio = useCallback(async (audioBlob: Blob) => {
         const cleanData = (await cleanResponse.json()) as CleanResponse;
 
         if (cleanData.success && cleanData.text) {
-          setCleanedText(cleanData.text);
+          // Automatically copy cleaned text to clipboard
+          copyToClipboard(cleanData.text);
+        } else {
+          // Fallback to raw transcription if cleaning fails
+          copyToClipboard(transcribeData.text!);
         }
 
         setIsCleaningWithLLM(false);
@@ -106,7 +144,7 @@ const uploadAudio = useCallback(async (audioBlob: Blob) => {
       setError('Processing failed: ' + errorMessage);
       setIsProcessing(false);
     }
-  }, [useLLM]);
+  }, [copyToClipboard]);
 
   const startRecording = useCallback(async () => {
     try {
@@ -129,8 +167,6 @@ const uploadAudio = useCallback(async (audioBlob: Blob) => {
       mediaRecorderRef.current.start();
       setIsRecording(true);
       setError(null);
-      setRawText(null);
-      setCleanedText(null);
       setIsCleaningWithLLM(false);
     } catch (err) {
       const errorMessage =
@@ -149,15 +185,7 @@ const uploadAudio = useCallback(async (audioBlob: Blob) => {
 
   
 
-  const copyToClipboard = (text: string) => {
-    navigator.clipboard
-      .writeText(text)
-      .then(() => {
-        setIsCopied(true);
-        setTimeout(() => setIsCopied(false), 2000);
-      })
-      .catch((err: Error) => setError('Copy failed: ' + err.message));
-  };
+  
 
   // Keyboard shortcut: Hold V to record
   useEffect(() => {
@@ -197,11 +225,11 @@ const uploadAudio = useCallback(async (audioBlob: Blob) => {
     };
     // startRecording and stopRecording are stable callbacks, safe to omit
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isRecording, isProcessing]);
+  }, [isRecording, isProcessing, copyToClipboard]);
 
   return (
-    <div className={styles.app}>
-      <div className={styles.container}>
+    <div className={`${styles.app} ${isSettingsMode ? styles.settingsMode : ''}`}>
+      <div className={styles.container} style={isSettingsMode ? { height: '100%' } : {}}>
         <Header 
           isSettingsMode={isSettingsMode}
           onToggleSettings={() => setIsSettingsMode(true)}
@@ -222,16 +250,28 @@ const uploadAudio = useCallback(async (audioBlob: Blob) => {
         )}
 
         {error && <ErrorMessage message={error} onDismiss={() => setError(null)} />}
-
-        <TranscriptionResults
-          rawText={rawText}
-          cleanedText={cleanedText}
-          useLLM={useLLM}
-          isCopied={isCopied}
-          isCleaningWithLLM={isCleaningWithLLM}
-          isProcessing={isProcessing}
-          onCopy={copyToClipboard}
-        />
+        
+        {/* Copy feedback toast */}
+        {copyToast && (
+          <div style={{
+            position: 'fixed',
+            bottom: '16px',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            background: 'rgba(0, 0, 0, 0.8)',
+            color: 'rgba(255, 255, 255, 0.9)',
+            padding: '6px 12px',
+            borderRadius: '4px',
+            fontSize: '12px',
+            fontWeight: '400',
+            boxShadow: '0 2px 8px rgba(0, 0, 0, 0.2)',
+            backdropFilter: 'blur(8px)',
+            border: '1px solid rgba(255, 255, 255, 0.1)',
+            zIndex: 1000,
+          }}>
+            ✓ Copied
+          </div>
+        )}
       </div>
     </div>
   );

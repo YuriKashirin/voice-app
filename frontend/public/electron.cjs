@@ -55,14 +55,18 @@ function writeSettingsToFile(settings) {
 
 function createWindow() {
   mainWindow = new BrowserWindow({
-    width: 1200,
-    height: 800,
+    width: 380,
+    height: 240,
+    minWidth: 350,
+    minHeight: 220,
+    maxWidth: 700,
+    maxHeight: 700,
+    frame: false,
     webPreferences: {
       preload: path.join(__dirname, 'preload.cjs'),
       nodeIntegration: false,
       contextIsolation: true
     },
-    titleBarStyle: 'hiddenInset',
     show: false
   });
 
@@ -78,10 +82,10 @@ function createWindow() {
     mainWindow.show();
   });
 
-  // Open DevTools in development
-  if (isDev) {
-    mainWindow.webContents.openDevTools();
-  }
+  // Open DevTools in development - disabled for cleaner UI
+  // if (isDev) {
+  //   mainWindow.webContents.openDevTools();
+  // }
 
   mainWindow.on('closed', () => {
     mainWindow = null;
@@ -230,3 +234,56 @@ ipcMain.handle('test-api-connection', async (event, settings) => {
   // Will be implemented later with actual API testing
   return { success: true, message: 'Connection test successful' };
 });
+
+// IPC handler for resizing window
+ipcMain.handle('resize-window', async (event, width, height) => {
+  if (mainWindow) {
+    const [currentWidth, currentHeight] = mainWindow.getContentSize();
+    
+    // Only resize if the new dimensions are different
+    if (currentWidth !== width || currentHeight !== height) {
+      mainWindow.setContentSize(width, height, true); // animate = true
+      
+      // Center window on screen after resize
+      mainWindow.center();
+      return { success: true };
+    }
+    return { success: true, message: 'No resize needed' };
+  }
+  return { success: false, message: 'Main window not available' };
+});
+
+// IPC handler for calculating optimal window size based on content
+ipcMain.handle('resize-to-fit-content', async (event) => {
+  if (mainWindow) {
+    try {
+      // Try to measure content dimensions (simplified approach)
+      const estimatedSize = estimateContentSize();
+      
+      // Resize window to fit content snugly
+      await mainWindow.setContentSize(estimatedSize.width, estimatedSize.height, true);
+      return { success: true };
+    } catch (error) {
+      console.error('Failed to resize to fit content:', error);
+      return { success: false, message: error.message };
+    }
+  }
+  return { success: false, message: 'main window not available' };
+});
+
+// Simple heuristic to estimate content size
+function estimateContentSize() {
+  // This could be enhanced with actual DOM measurement
+  // For now, use smart defaults
+  
+  const baseSizes = {
+    buttonOnly: { width: 200, height: 150 },        // Just RecordButton and hint  
+    fullApp: { width: 320, height: 200 },        // Just the main app components
+    withSettings: { width: 380, height: 560 }     // Settings panel
+  };
+  
+  // Smart size estimation based on state (this could be enhanced)
+  const isSettingsMode = process.env.NODE_ENV === 'production' ? false : true;
+  
+  return isSettingsMode ? baseSizes.withSettings : baseSizes.fullApp;
+}

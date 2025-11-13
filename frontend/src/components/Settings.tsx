@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Settings2, X, Save, TestTube2, Check, AlertCircle } from 'lucide-react';
+import { X, Check, AlertCircle } from 'lucide-react';
 import styles from './Settings.module.css';
 import type { SettingsProps } from '../types';
 

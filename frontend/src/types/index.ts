@@ -97,7 +97,7 @@ export interface AppSettings {
   apiKey: string;
   baseUrl: string;
   model: string;
-  whisperModel: string;
+  whisperModel?: string;
 }
 
 export interface SettingsProps {
@@ -112,6 +112,7 @@ declare global {
       getSettings: () => Promise<AppSettings>;
       saveSettings: (settings: AppSettings) => Promise<boolean>;
       testApiConnection: (settings: AppSettings) => Promise<{ success: boolean; message: string }>;
+      resizeWindow: (width: number, height: number) => Promise<{ success: boolean; message?: string }>;
       onBackendError: (callback: (message: string) => void) => void;
       removeBackendErrorListener: (callback: (message: string) => void) => void;
       getVersion: () => string;
