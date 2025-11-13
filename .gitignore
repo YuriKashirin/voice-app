@@ -50,6 +50,9 @@ dist/
 # Environment
 .env
 
+# Electron user settings
+backend/electron-settings.json
+
 # Frontend
 frontend/node_modules/
 frontend/dist/
